@@ -1,0 +1,15 @@
+{
+  "name": "livefeed",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^15.2.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "node-html-parser": "^7.0.1"
+  }
+}
