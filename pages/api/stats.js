@@ -1,4 +1,4 @@
-// File: pages/api/stats/[manager]/[showId].js
+// File: pages/api/stats.js
 
 import { parse } from 'node-html-parser';
 
@@ -39,6 +39,14 @@ async function loginAndGetCookies(username, password) {
     : rawCookies.split(';')[0];
 }
 
+function getCurrentDate() {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = String(now.getFullYear()).slice(2);
+  return `${day}/${month}/${year}`;
+}
+
 async function getShowData(cookie, showId) {
   const titleRes = await fetch(`https://manager.goshow.co.il/backstage/shows/view/${showId}`, {
     headers: {
@@ -52,25 +60,20 @@ async function getShowData(cookie, showId) {
 
   const titleHtml = await titleRes.text();
   const titleRoot = parse(titleHtml);
-
   const title = titleRoot.querySelector('div.show_info > h2')?.text.trim() || `מופע ${showId}`;
-  const dateText = titleRoot.querySelector('p.date')?.text.trim();
-  let formattedDate = 'תאריך לא נמצא';
-  if (dateText && /^\d{2}-\d{2}-\d{4}$/.test(dateText)) {
-    const [day, month, year] = dateText.split('-');
-    formattedDate = `${day}/${month}/${year.slice(2)}`;
-  }
 
   const statsRes = await fetch(`https://manager.goshow.co.il/backstage/shows/BarcodeStatistic/${showId}`, {
-    method: 'GET',
+    method: 'POST',
     headers: {
       'Cookie': cookie,
       'User-Agent': 'Mozilla/5.0',
       'Accept': '*/*',
       'Accept-Language': 'he-IL,he;q=0.9',
       'Referer': `https://manager.goshow.co.il/backstage/shows/view/${showId}`,
-      'X-Requested-With': 'XMLHttpRequest',
       'Origin': 'https://manager.goshow.co.il',
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Length': '0',
+      'Connection': 'keep-alive',
     },
   });
 
@@ -86,7 +89,7 @@ async function getShowData(cookie, showId) {
 
   return {
     title,
-    date: formattedDate,
+    date: getCurrentDate(),
     printed: parseInt(printed),
     scanned: parseInt(scanned),
     remaining: parseInt(remaining),

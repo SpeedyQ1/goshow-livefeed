@@ -16,7 +16,7 @@ export default function ShowStatsPage() {
 
     const fetchData = async () => {
       try {
-        const res = await fetch(`/api/stats/${manager}/${showId}`);
+        const res = await fetch(`/api/stats?manager=${manager}&showId=${showId}`);
         const json = await res.json();
         if (!res.ok || json.error) throw new Error(json.details || json.error);
         setData(json);
