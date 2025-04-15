@@ -42,7 +42,7 @@ export default function ShowStatsPage() {
         מומשו: <strong>{data.scanned}</strong> מתוך <strong>{data.printed}</strong>
       </div>
     </div>
-  );
+  ); 
 }
 
 const styles = {
