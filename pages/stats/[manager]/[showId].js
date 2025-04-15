@@ -37,7 +37,7 @@ export default function ShowStatsPage() {
   return (
     <div style={styles.wrapper}>
       <h1 style={styles.title}>{data.title}</h1>
-      <h2 style={styles.date}>{data.date}</h2>
+      <h2 style={styles.date}>תאריך המופע: {data.showDate}</h2>
       <div style={styles.box}>
         מומשו: <strong>{data.scanned}</strong> מתוך <strong>{data.printed}</strong>
       </div>
