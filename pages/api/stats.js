@@ -31,7 +31,7 @@ async function loginAndGetCookies(username, password) {
     redirect: 'manual',
   });
 
-  const rawCookies = res.headers.get('set-cookie') || res.headers.raw()['set-cookie'];
+  const rawCookies = res.headers.get('set-cookie') || (res.headers.raw?.()['set-cookie'] ?? []);
   if (!rawCookies) throw new Error('Login failed or no cookies returned');
 
   return Array.isArray(rawCookies)
@@ -40,19 +40,20 @@ async function loginAndGetCookies(username, password) {
 }
 
 async function getShowData(cookie, showId) {
-  // Get title and date
   const titleRes = await fetch(`https://manager.goshow.co.il/backstage/shows/view/${showId}`, {
     headers: {
       'Cookie': cookie,
       'User-Agent': 'Mozilla/5.0',
       'Accept': 'text/html',
+      'Referer': 'https://manager.goshow.co.il/backstage',
+      'Origin': 'https://manager.goshow.co.il',
     },
   });
 
   const titleHtml = await titleRes.text();
   const titleRoot = parse(titleHtml);
-  const title = titleRoot.querySelector('div.show_info > h2')?.text.trim() || `מופע ${showId}`;
 
+  const title = titleRoot.querySelector('div.show_info > h2')?.text.trim() || `מופע ${showId}`;
   const dateText = titleRoot.querySelector('p.date')?.text.trim();
   let formattedDate = 'תאריך לא נמצא';
   if (dateText && /^\d{2}-\d{2}-\d{4}$/.test(dateText)) {
@@ -60,8 +61,8 @@ async function getShowData(cookie, showId) {
     formattedDate = `${day}/${month}/${year.slice(2)}`;
   }
 
-  // Get ticket stats
   const statsRes = await fetch(`https://manager.goshow.co.il/backstage/shows/BarcodeStatistic/${showId}`, {
+    method: 'GET',
     headers: {
       'Cookie': cookie,
       'User-Agent': 'Mozilla/5.0',
@@ -69,6 +70,7 @@ async function getShowData(cookie, showId) {
       'Accept-Language': 'he-IL,he;q=0.9',
       'Referer': `https://manager.goshow.co.il/backstage/shows/view/${showId}`,
       'X-Requested-With': 'XMLHttpRequest',
+      'Origin': 'https://manager.goshow.co.il',
     },
   });
 
@@ -77,7 +79,7 @@ async function getShowData(cookie, showId) {
   const statsHtml = await statsRes.text();
   const root = parse(statsHtml);
   const dataRow = root.querySelector('tr.summary');
-  if (!dataRow) throw new Error('Failed to parse statistics');
+  if (!dataRow) throw new Error('Failed to parse statistics row');
 
   const columns = dataRow.querySelectorAll('td').map(td => td.text.trim());
   const [_, __, printed, scanned, remaining] = columns;
