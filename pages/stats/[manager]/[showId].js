@@ -1,3 +1,5 @@
+// File: pages/stats/[manager]/[showId].js
+
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -35,7 +37,7 @@ export default function ShowStatsPage() {
   return (
     <div style={styles.wrapper}>
       <h1 style={styles.title}>{data.title}</h1>
-      <h2 style={styles.date}>תאריך המופע: {data.showDate}</h2>
+      <h2 style={styles.date}>תאריך המופע: {data.showDate} בשעה {data.showTime}</h2>
       <div style={styles.box}>
         מומשו: <strong>{data.scanned}</strong> מתוך <strong>{data.printed}</strong>
       </div>

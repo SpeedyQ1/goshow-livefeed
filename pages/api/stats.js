@@ -61,6 +61,8 @@ async function getShowData(cookie, showId) {
     const [_, day, month, year] = dateMatch;
     showDate = `${day}/${month}/${year.slice(2)}`;
   }
+  const timeRaw = titleRoot.querySelector('p.time')?.text.trim();
+  const showTime = timeRaw && /^\d{2}:\d{2}$/.test(timeRaw) ? timeRaw : 'שעה לא נמצאה';
 
   const statsRes = await fetch(`https://manager.goshow.co.il/backstage/shows/BarcodeStatistic/${showId}`, {
     method: 'POST',
@@ -90,10 +92,12 @@ async function getShowData(cookie, showId) {
   return {
     title,
     showDate,
+    showTime, 
     printed: parseInt(printed),
     scanned: parseInt(scanned),
     remaining: parseInt(remaining),
   };
+  
 }
 
 export default async function handler(req, res) {
